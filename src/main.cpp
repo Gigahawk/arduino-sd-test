@@ -7,7 +7,7 @@ SdVolume volume;
 SdFile root;
 
 const int chipSelect = 5;
-const int bytesToWrite = 256;
+const int bytesToWrite = 2048;
 const char* fileName = "test.txt";
 
 void prompt(const char* msg) {
@@ -123,7 +123,8 @@ void writeToCard() {
   }
   Serial.println("Writing data");
   for(int i=0; i < bytesToWrite; i++) {
-    c = (char)random(65, 91);
+    //c = (char)random(65, 91);
+    c = (char)i;
     Serial.print(c);
     file.write((uint8_t)c);
   }

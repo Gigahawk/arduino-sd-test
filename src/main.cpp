@@ -19,34 +19,35 @@ void prompt(const char* msg) {
   }
 }
 
-void initializeCardSd2Card() {
+bool initializeCardSd2Card() {
   if (!card.init(SPI_HALF_SPEED, chipSelect))
   {
     Serial.println("initialization failed. Things to check:");
     Serial.println("* is a card inserted?");
     Serial.println("* is your wiring correct?");
     Serial.println("* did you change the chipSelect pin to match your shield or module?");
-    while (1)
-      ;
+    return false;
   }
   else
   {
     Serial.println("Wiring is correct and a card is present.");
   }
   Serial.println();
+  return true;
 }
 
-void initializeCardSd() {
+bool initializeCardSd() {
   if(!SD.begin(chipSelect)) {
     Serial.println("Initialization failed");
-    while (1);
+    return false;
   } else {
     Serial.println("Init OK");
   }
   Serial.println();
+  return true;
 }
 
-void printCardInfo()
+bool printCardInfo()
 {
   Serial.print("Card type:         ");
   switch (card.type())
@@ -68,7 +69,7 @@ void printCardInfo()
   if (!volume.init(card))
   {
     Serial.println("Could not find FAT16/FAT32 partition.\nMake sure you've formatted the card");
-    while (1);
+    return false;
   }
 
   Serial.print("Clusters:          ");
@@ -106,9 +107,10 @@ void printCardInfo()
   root.ls(LS_R | LS_DATE | LS_SIZE);
   root.close();
   Serial.println();
+  return true;
 }
 
-void writeToCard() {
+bool writeToCard() {
   randomSeed(millis());
   char c;
   Serial.print("Opening ");
@@ -119,7 +121,7 @@ void writeToCard() {
     Serial.println("File opened successfully");
   } else {
     Serial.println("Failed to open file");
-    while(1);
+    return false;
   }
   Serial.println("Writing data");
   for(int i=0; i < bytesToWrite; i++) {
@@ -133,9 +135,10 @@ void writeToCard() {
   Serial.println();
   Serial.println("Done writing");
   Serial.println();
+  return true;
 }
 
-void readFromCard() {
+bool readFromCard() {
   Serial.print("Opening ");
   Serial.print(fileName);
   Serial.println(" for reading");
@@ -144,7 +147,7 @@ void readFromCard() {
     Serial.println("File opened successfully");
   } else {
     Serial.println("Failed to open file");
-    while(1);
+    return false;
   }
   Serial.println("Reading data");
   while(file.available()) {
@@ -154,6 +157,7 @@ void readFromCard() {
   Serial.println();
   Serial.println("Done reading");
   Serial.println();
+  return true;
 }
 
 void setup() {
@@ -165,13 +169,18 @@ void setup() {
 void loop() {
   Serial.println("Start of SD test");
   prompt("Press enter to begin card initialization with the Sd2Card lib");
-  initializeCardSd2Card();
+  if(!initializeCardSd2Card())
+    return;
   prompt("Press enter to begin card initialization with the SD lib");
-  initializeCardSd();
+  if(!initializeCardSd())
+    return;
   prompt("Press enter to query for card info");
-  printCardInfo();
+  if(!printCardInfo())
+    return;
   prompt("Press enter to write a file to the card");
-  writeToCard();
+  if(!writeToCard())
+    return;
   prompt("Press enter to read the file from the card");
-  readFromCard();
+  if(!readFromCard())
+    return;
 }

@@ -68,7 +68,7 @@ bool printCardInfo()
   // Now we will try to open the 'volume'/'partition' - it should be FAT16 or FAT32
   if (!volume.init(card))
   {
-    Serial.println("Could not find FAT16/FAT32 partition.\nMake sure you've formatted the card");
+    Serial.println("Could not find FAT16/FAT32 partition.\nMake sure you've formatted the card\n");
     return false;
   }
 
